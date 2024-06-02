@@ -21,7 +21,7 @@ export function MerchantPostTest(user, merchantToAdd, config, tags) {
     /** @type {import("../../entity/merchant").Merchant} */
     const positivePayload = {
         name: generateRandomName(),
-        category: generateRandomMerchantCategory(),
+        merchantCategory: generateRandomMerchantCategory(),
         imageUrl: generateRandomImageUrl(),
         location: {
             lat: merchantToAdd.location.lat,

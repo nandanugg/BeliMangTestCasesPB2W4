@@ -1,6 +1,6 @@
 export const MaxInt = 9007199254740991; // Maximum safe integer in JavaScript
 export function generateRandomImageUrl() {
-    return `http://${generateRandomDomain()}/image.png`
+    return `http://${generateRandomDomain()}/image.jpg`
 }
 
 export function generateRandomPhoneNumber(addPlusPrefix) {
