@@ -1,11 +1,14 @@
 run:
-	go run caddy/main.go
+	git pull origin main;
+	go run caddy/main.go;
 
 test:
-	k6 run --vus 1 --iterations 1 index.js
+	git pull origin main;
+	k6 run --vus 1 --iterations 1 index.js;
 
 test-debug:
-	DEBUG_ALL=true k6 run --vus 1 --iterations 1 index.js
+	git pull origin main;
+	DEBUG_ALL=true k6 run --vus 1 --iterations 1 index.js;
 
 tidy:
 	go mod tidy
