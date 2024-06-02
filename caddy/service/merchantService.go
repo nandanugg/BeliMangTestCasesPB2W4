@@ -201,4 +201,5 @@ func (service *MerchantService) ResetAll() {
 	service.MerchantNearestRecord = nil
 	service.PregeneratedMerchants = nil
 	service.AssignedMerchants = nil
+	log.Println("Reset all")
 }
