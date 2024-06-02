@@ -35,8 +35,14 @@
 
 /**
  * Represents a collection of MerchantNearestRecords.
- * @typedef {Object} AllMerchantNearestRecord
+ * @typedef {Object} MerchantNearestRecordZone
  * @property {MerchantNearestRecord[]} records - An array of MerchantNearestRecord objects.
+ */
+
+/**
+ * Represents a message containing all merchant nearest records.
+ * @typedef {Object} AllMerchantNearestRecord
+ * @property {MerchantNearestRecordZone[]} zones - An array of MerchantNearestRecordZone objects.
  */
 
 /**
@@ -59,6 +65,12 @@
 /**
  * Represents a collection of generated routes.
  * @typedef {Object} AllGeneratedRoutes
+ * @property {RouteZone[]} zone - An array of RouteZone objects.
+ */
+
+/**
+ * Represents a RouteZone.
+ * @typedef {Object} RouteZone
  * @property {GeneratedRoutes[]} routes - An array of GeneratedRoutes objects.
  */
 

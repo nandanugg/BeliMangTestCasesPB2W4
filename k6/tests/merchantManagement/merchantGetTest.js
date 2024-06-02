@@ -4,7 +4,7 @@ import { combine, generateRandomImageUrl, generateRandomName } from "../../helpe
 import { testPostJsonAssert, testGetAssert } from "../../helpers/request.js";
 
 /**
- * @param {Admin} user
+ * @param {import("../../entity/admin.js").Admin} user
  * @param {import("../../entity/config").Config} config 
  * @param {import("../../entity/merchant").RawMerchant[]} rawMerchants
  * @returns {import("../../entity/merchant").Merchant[]}

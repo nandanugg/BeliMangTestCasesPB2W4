@@ -37,6 +37,10 @@ type MerchantNearestRecord struct {
 	MerchantOrder map[Order]*Merchant
 }
 
+type MerchantNearestZoneRecord struct {
+	Records []MerchantNearestRecord
+}
+
 type PregeneratedId string
 type MerchantId string
 type Order int

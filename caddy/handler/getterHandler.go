@@ -13,29 +13,36 @@ func (h *Handler) GetAllMerchantNearestLocations(ctx context.Context, _ *emptypb
 		return nil, err
 	}
 
-	var record []*pb.MerchantNearestRecord
-	for _, r := range res {
-		merchants := make(map[int64]*pb.Merchant)
-		for k, v := range r.MerchantOrder {
-			merchants[int64(k)] = &pb.Merchant{
-				MerchantId:     v.MerchantId,
-				PregeneratedId: v.PregeneratedId,
-				Location: &pb.LocationPoint{
-					Lat:  float32(v.Location.Lat),
-					Long: float32(v.Location.Long),
-				},
+	var zones []*pb.MerchantNearestRecordZone
+	for _, zone := range res {
+		var recordsRes []*pb.MerchantNearestRecord
+		merchantsOrder := make(map[int64]*pb.Merchant)
+		for _, record := range zone.Records {
+			for order, merchant := range record.MerchantOrder {
+				merchantsOrder[int64(order)] = &pb.Merchant{
+					MerchantId:     merchant.MerchantId,
+					PregeneratedId: merchant.PregeneratedId,
+					Location: &pb.LocationPoint{
+						Lat:  float32(merchant.Location.Lat),
+						Long: float32(merchant.Location.Long),
+					},
+				}
 			}
+
+			recordsRes = append(recordsRes, &pb.MerchantNearestRecord{
+				StartingPoint: &pb.LocationPoint{
+					Lat:  float32(record.StartingPoint.Lat),
+					Long: float32(record.StartingPoint.Long),
+				},
+				Merchants: merchantsOrder,
+			})
 		}
-		record = append(record, &pb.MerchantNearestRecord{
-			StartingPoint: &pb.LocationPoint{
-				Lat:  float32(r.StartingPoint.Lat),
-				Long: float32(r.StartingPoint.Long),
-			},
-			Merchants: merchants,
+		zones = append(zones, &pb.MerchantNearestRecordZone{
+			Records: recordsRes,
 		})
 	}
 	return &pb.AllMerchantNearestRecord{
-		Records: record,
+		Zones: zones,
 	}, nil
 }
 
@@ -45,11 +52,12 @@ func (h *Handler) GetAllMerchantRoutes(ctx context.Context, _ *emptypb.Empty) (*
 		return nil, err
 	}
 
-	var allGeneratedRoutes []*pb.GeneratedRoutes
+	zones := []*pb.RouteZone{}
 	for _, zone := range srvRes {
+		var allGeneratedRoutes []*pb.GeneratedRoutes
 		generatedRoute := make(map[int64]*pb.Merchant)
-		for _, a := range zone.GeneratedRoutes {
-			for order, r := range a.GeneratedRoutes {
+		for _, zoneGeneratedRoutes := range zone.GeneratedRoutes {
+			for order, r := range zoneGeneratedRoutes.GeneratedRoutes {
 				generatedRoute[int64(order)] = &pb.Merchant{
 					MerchantId:     r.MerchantId,
 					PregeneratedId: r.PregeneratedId,
@@ -62,19 +70,21 @@ func (h *Handler) GetAllMerchantRoutes(ctx context.Context, _ *emptypb.Empty) (*
 			allGeneratedRoutes = append(allGeneratedRoutes, &pb.GeneratedRoutes{
 				GeneratedRoutes: generatedRoute,
 				StartingPoint: &pb.LocationPoint{
-					Lat:  float32(a.StartingPoint.Lat),
-					Long: float32(a.StartingPoint.Long),
+					Lat:  float32(zoneGeneratedRoutes.StartingPoint.Lat),
+					Long: float32(zoneGeneratedRoutes.StartingPoint.Long),
 				},
-				TotalDuration: int64(a.TotalDurationInMinute),
-				TotalDistance: float32(a.TotalDistance),
-				StartingIndex: int64(a.StartingIndex),
+				TotalDuration: int64(zoneGeneratedRoutes.TotalDurationInMinute),
+				TotalDistance: float32(zoneGeneratedRoutes.TotalDistance),
+				StartingIndex: int64(zoneGeneratedRoutes.StartingIndex),
 			})
 		}
-
+		zones = append(zones, &pb.RouteZone{
+			Routes: allGeneratedRoutes,
+		})
 	}
 
 	return &pb.AllGeneratedRoutes{
-		Routes: allGeneratedRoutes,
+		Zone: zones,
 	}, nil
 }
 

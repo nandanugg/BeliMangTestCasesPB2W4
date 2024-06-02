@@ -48,6 +48,7 @@ export function isExists(v, query) {
         const obj = v.json()
         const res = traverseObject(obj, query)
         return !res.includes(undefined)
+        // eslint-disable-next-line no-unused-vars
     } catch (e) {
         return false
     }
@@ -93,6 +94,7 @@ export function isEqualWith(v, query, cb) {
         const obj = v.json()
         const res = traverseObject(obj, query)
         return cb(res)
+        // eslint-disable-next-line no-unused-vars
     } catch (e) {
         return false
     }
@@ -110,6 +112,7 @@ export function isEqual(v, query, expected) {
         const obj = v.json()
         const res = traverseObject(obj, query)
         return res.includes(expected)
+        // eslint-disable-next-line no-unused-vars
     } catch (e) {
         return false
     }
@@ -139,7 +142,8 @@ export function isOrdered(v, key, ordered, conversion) {
         } else {
             return res.every((val, i) => i === 0 || val <= res[i - 1]);
         }
-    } catch (error) {
+        // eslint-disable-next-line no-unused-vars
+    } catch (e) {
         return false;
     }
 }
@@ -157,7 +161,8 @@ export function isTotalDataInRange(v, key, min, max) {
         const obj = v.json();
         const res = traverseObject(obj, key);
         return res.length >= min && res.length <= max;
-    } catch (error) {
+        // eslint-disable-next-line no-unused-vars
+    } catch (e) {
         return false;
     }
 }

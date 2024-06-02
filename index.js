@@ -1,7 +1,7 @@
 import grpc from "k6/net/grpc";
 import { config } from "./k6/entity/config.js";
 import { initMerchantNearestLocations, initPegeneratedTSPMerchants, initZonesWithPregeneratedMerchants, resetAll } from "./k6/repository/initCaddyRepository.js";
-import { assignPregeneratedMerchant, getAllPregeneratedMerchants } from "./k6/repository/getterCaddyRepository.js";
+import { assignPregeneratedMerchant, getAllMerchantNearestLocations, getAllMerchantRoutes, getAllPregeneratedMerchants } from "./k6/repository/getterCaddyRepository.js";
 import { AdminRegisterTest } from "./k6/tests/auth/adminRegisterTest.js";
 import { fail } from "k6";
 import { AdminLoginTest } from "./k6/tests/auth/adminLoginTest.js";
@@ -11,6 +11,10 @@ import { MerchantPostTest } from "./k6/tests/merchantManagement/merchantPostTest
 import { MerchantGetTest } from "./k6/tests/merchantManagement/merchantGetTest.js";
 import { MerchantItemGetTest } from "./k6/tests/merchantManagement/merchantItemGetTest.js";
 import { MerchantItemPostTest } from "./k6/tests/merchantManagement/merchantItemPostTest.js";
+import { EstimateOrderTest } from "./k6/tests/purchase/estimateOrderTest.js";
+import { GetNearbyMerchantTest } from "./k6/tests/purchase/getNearbyMerchantTest.js";
+import { OrderTest } from "./k6/tests/purchase/orderTest.js";
+import { GetOrderTest } from "./k6/tests/purchase/getOrderTest.js";
 
 const client = new grpc.Client();
 client.load([], 'contract.proto');
@@ -58,6 +62,7 @@ export default function () {
     checkRes(merchant, "Merchant Post failed")
     merchants.push(merchant)
 
+    merchantToAdd.merchant = merchantToAdd.merchant.slice(0, merchantToAdd.merchant.length - 1)
     merchant = MerchantGetTest(admin, merchantToAdd.merchant, config, { feature: "Merchant Get" })
     checkRes(merchant, "Merchant Get failed")
     merchants.push(merchant)
@@ -81,10 +86,16 @@ export default function () {
     user = UserLoginTest(user, config, { feature: "User Login" })
     checkRes(user, "User Login failed")
 
-    // TODO: Test merchant nearby from user
-    // TODO: Test users estimate checkout time
-    // TODO: Test user post order
-    // TODO: Test user get orders
+    let allNearestMerchantLocations = getAllMerchantNearestLocations(config)
+    checkRes(allNearestMerchantLocations, "Get all nearest merchant locations failed")
+    GetNearbyMerchantTest(user, allNearestMerchantLocations.records[0], config, { feature: "Get Nearby Merchant" })
+
+    let allMerchantRoutes = getAllMerchantRoutes(config)
+    checkRes(allMerchantRoutes, "Get all merchant routes failed")
+    const estimateId = EstimateOrderTest(user, admin, allMerchantRoutes.zone[0], allMerchantRoutes.zone[1], config, { feature: "Estimate Order" })
+    checkRes(estimateId, "Estimate Order failed")
+    OrderTest(user, estimateId, config, { feature: "Order" })
+    GetOrderTest(user, config, { feature: "Get Order" })
 
     client.close()
 }

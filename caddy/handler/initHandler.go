@@ -13,6 +13,7 @@ func (h *Handler) InitMerchantNearestLocations(ctx context.Context, _ *emptypb.E
 }
 
 func (h *Handler) InitPegeneratedTSPMerchants(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	// TODO: change this to be based on the request input
 	h.srv.InitPegeneratedTSPMerchants(2)
 	return &emptypb.Empty{}, nil
 }

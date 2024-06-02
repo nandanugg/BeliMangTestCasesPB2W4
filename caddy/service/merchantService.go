@@ -11,17 +11,17 @@ import (
 )
 
 type MerchantService struct {
-	MerchantZoneRecord    []*entity.MerchantZoneRecord
-	MerchantNearestRecord []*entity.MerchantNearestRecord
-	PregeneratedMerchants map[entity.PregeneratedId]*entity.Merchant
-	AssignedMerchants     map[entity.PregeneratedId]*entity.Merchant
+	MerchantZoneRecord        []*entity.MerchantZoneRecord
+	MerchantNearestZoneRecord []*entity.MerchantNearestZoneRecord
+	PregeneratedMerchants     map[entity.PregeneratedId]*entity.Merchant
+	AssignedMerchants         map[entity.PregeneratedId]*entity.Merchant
 }
 
 func NewMerchantService() *MerchantService {
 	return &MerchantService{}
 }
 
-func (service *MerchantService) GetAllMerchantNearestLocations() ([]*entity.MerchantNearestRecord, error) {
+func (service *MerchantService) GetAllMerchantNearestLocations() ([]*entity.MerchantNearestZoneRecord, error) {
 	zoneRecords := service.MerchantZoneRecord
 	for _, zone := range zoneRecords {
 		for preRegeneratedId := range zone.MerchantPregeneratedId {
@@ -31,7 +31,7 @@ func (service *MerchantService) GetAllMerchantNearestLocations() ([]*entity.Merc
 			}
 		}
 	}
-	return service.MerchantNearestRecord, nil
+	return service.MerchantNearestZoneRecord, nil
 }
 
 func (service *MerchantService) GetAllMerchantRoutes() ([]*entity.MerchantZoneRecord, error) {
@@ -64,7 +64,7 @@ func (service *MerchantService) InitMerchantNearestLocations(generateCount int) 
 			Lat:  currentZone.EndZoneRange.Lat,
 			Long: currentZone.EndZoneRange.Long,
 		})
-
+		var records []entity.MerchantNearestRecord
 		for i := 0; i < generateCount; i++ {
 			merchantPregeneratedIds := currentZone.MerchantPregeneratedId
 			merchants := make([]*entity.Merchant, 0)
@@ -87,11 +87,14 @@ func (service *MerchantService) InitMerchantNearestLocations(generateCount int) 
 			for j, merchant := range merchants {
 				nearestMerchant[entity.Order(j)] = merchant
 			}
-			service.MerchantNearestRecord = append(service.MerchantNearestRecord, &entity.MerchantNearestRecord{
+			records = append(records, entity.MerchantNearestRecord{
 				StartingPoint: userLocation,
 				MerchantOrder: nearestMerchant,
 			})
 		}
+		service.MerchantNearestZoneRecord = append(service.MerchantNearestZoneRecord, &entity.MerchantNearestZoneRecord{
+			Records: records,
+		})
 	}
 	log.Println("Init merchant nearest locations")
 }
@@ -198,7 +201,7 @@ func (service *MerchantService) AssignPregeneratedMerchant(pregeneratedId, merch
 
 func (service *MerchantService) ResetAll() {
 	service.MerchantZoneRecord = nil
-	service.MerchantNearestRecord = nil
+	service.MerchantNearestZoneRecord = nil
 	service.PregeneratedMerchants = nil
 	service.AssignedMerchants = nil
 	log.Println("Reset all")

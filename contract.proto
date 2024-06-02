@@ -31,11 +31,16 @@ message Merchant {
 
 message MerchantNearestRecord {
    LocationPoint startingPoint = 1;
-   map<int64, Merchant> merchants = 2; 
+   int64 totalDuration = 2;
+   map<int64, Merchant> merchants = 3; 
+}
+
+message MerchantNearestRecordZone {
+    repeated MerchantNearestRecord records = 1;
 }
 
 message AllMerchantNearestRecord {
-    repeated MerchantNearestRecord records = 1;
+    repeated MerchantNearestRecordZone zones = 1;
 }
 
 message PregeneratedMerchant {
@@ -50,8 +55,12 @@ message GeneratedRoutes {
     int64 startingIndex = 5;
 }
 
-message AllGeneratedRoutes {
+message RouteZone {
     repeated GeneratedRoutes routes = 1;
+}
+
+message AllGeneratedRoutes {
+    repeated RouteZone zone = 1;
 }
 
 service MerchantService {

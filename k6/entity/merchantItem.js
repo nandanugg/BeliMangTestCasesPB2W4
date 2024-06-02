@@ -5,7 +5,7 @@
 
 /**
  * @typedef {Object} MerchantItem
- * @property {string} merchantId 
+ * @property {string} itemId 
  * @property {string} name
  * @property {MerchantItemCategory} productCategory 
  * @property {price} price 
