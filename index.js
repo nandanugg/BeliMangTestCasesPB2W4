@@ -36,8 +36,9 @@ export function teardown() {
     });
 
     resetAll(client);
-
     client.close();
+
+    console.log("Test ended, I recomend to remove all of your merchants before re-run the test to avoid miss estimation on nearest merchant location.")
 }
 
 export default function () {
