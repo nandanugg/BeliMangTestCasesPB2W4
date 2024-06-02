@@ -10,6 +10,9 @@ test-debug:
 	git pull origin main;
 	DEBUG_ALL=true k6 run --vus 1 --iterations 1 index.js;
 
+test-no-pull:
+	DEBUG_ALL=true k6 run --vus 1 --iterations 1 index.js;
+
 tidy:
 	go mod tidy
 

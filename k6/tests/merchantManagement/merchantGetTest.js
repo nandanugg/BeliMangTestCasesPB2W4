@@ -6,10 +6,10 @@ import { testPostJsonAssert, testGetAssert } from "../../helpers/request.js";
 /**
  * @param {Admin} user
  * @param {import("../../entity/config").Config} config 
- * @param {import("../../entity/merchant").RawMerchant[]} merchants
+ * @param {import("../../entity/merchant").RawMerchant[]} rawMerchants
  * @returns {import("../../entity/merchant").Merchant[]}
  */
-export function MerchantGetTest(user, merchants, config, tags) {
+export function MerchantGetTest(user, rawMerchants, config, tags) {
     if (!IsAdmin(user)) {
         return;
     }
@@ -49,7 +49,7 @@ export function MerchantGetTest(user, merchants, config, tags) {
     /** @type {import("../../entity/merchant").Merchant[]} */
     const addedMerchants = []
     if (!config.LOAD_TEST) {
-        merchants.forEach(merchant => {
+        rawMerchants.forEach(merchant => {
             const merchantToAdd = {
                 name: generateRandomName() + "a",
                 category: "BoothKiosk",
