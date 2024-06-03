@@ -52,7 +52,7 @@ export function MerchantGetTest(user, rawMerchants, config, tags) {
         rawMerchants.forEach(merchant => {
             const merchantToAdd = {
                 name: generateRandomName() + "a",
-                category: "BoothKiosk",
+                merchantCategory: "BoothKiosk",
                 imageUrl: generateRandomImageUrl(),
                 location: {
                     lat: merchant.location.lat,
