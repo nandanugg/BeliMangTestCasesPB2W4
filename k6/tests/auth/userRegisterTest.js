@@ -7,7 +7,7 @@ import { testPostJsonAssert } from "../../helpers/request.js";
  */
 export function UserRegisterTest(config, tags) {
     const featureName = "User Register";
-    const route = config.BASE_URL + "/user/register";
+    const route = config.BASE_URL + "/users/register";
 
     /** @type {import("../../entity/user").User} */
     const positivePayload = {

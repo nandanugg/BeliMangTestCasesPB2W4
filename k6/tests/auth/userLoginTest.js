@@ -13,7 +13,7 @@ export function UserLoginTest(user, config, tags) {
     }
 
     const featureName = "User Login";
-    const route = config.BASE_URL + "/user/login";
+    const route = config.BASE_URL + "/users/login";
 
     /** @type {import("../../entity/user").User} */
     const positivePayload = {
