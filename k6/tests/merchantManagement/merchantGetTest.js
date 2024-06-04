@@ -98,4 +98,5 @@ export function MerchantGetTest(user, rawMerchants, config, tags) {
             },
         }), config, tags)
     }
+    return addedMerchants
 }
