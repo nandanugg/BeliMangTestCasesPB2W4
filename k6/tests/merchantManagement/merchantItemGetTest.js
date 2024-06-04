@@ -1,6 +1,6 @@
 import { IsAdmin } from "../../entity/admin.js";
 import { isEqual, isEqualWith, isExists, isOrdered, isTotalDataInRange, isValidDate } from "../../helpers/assertion.js";
-import { combine, generateRandomImageUrl, generateRandomName } from "../../helpers/generator.js";
+import { combine, generateRandomImageUrl, generateRandomName, generateRandomNumber } from "../../helpers/generator.js";
 import { testPostJsonAssert, testGetAssert } from "../../helpers/request.js";
 
 /**
@@ -54,6 +54,7 @@ export function MerchantItemGetTest(user, merchant, addItemCount, config, tags) 
                 name: generateRandomName() + "a",
                 merchantCategory: "Snack",
                 imageUrl: generateRandomImageUrl(),
+                price: generateRandomNumber(1000, 10000),
                 location: {
                     lat: merchant.location.lat,
                     long: merchant.location.long
@@ -89,7 +90,7 @@ export function MerchantItemGetTest(user, merchant, addItemCount, config, tags) 
             ['should have different data from offset 0']: (res) => {
                 try {
                     return res.json().data.every(e => {
-                        return paginationRes.res.json().data.every(a => a.merchantId !== e.merchantId)
+                        return paginationRes.res.json().data.every(a => a.itemId !== e.itemId)
                     })
                 } catch (err) {
                     return err
