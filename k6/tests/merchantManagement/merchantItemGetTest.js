@@ -52,7 +52,7 @@ export function MerchantItemGetTest(user, merchant, addItemCount, config, tags) 
         for (let i = 0; i < addItemCount; i++) {
             const merchantItemToAdd = {
                 name: generateRandomName() + "a",
-                merchantCategory: "Snack",
+                productCategory: "Snack",
                 imageUrl: generateRandomImageUrl(),
                 price: generateRandomNumber(1000, 10000),
                 location: {
