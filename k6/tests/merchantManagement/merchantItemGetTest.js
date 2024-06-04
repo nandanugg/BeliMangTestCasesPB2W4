@@ -70,7 +70,7 @@ export function MerchantItemGetTest(user, merchant, addItemCount, config, tags) 
     testGetAssert("no param", featureName, route, {}, headers, positiveTestCases, config, tags)
 
     testGetAssert("with name=a param", featureName, route, { name: "a" }, headers, combine(positiveTestCases, {
-        ['should have name with "a" in it']: (v) => isEqualWith(v, 'data[].name', (a) => a.toLowerCase().includes('a'))
+        ['should have name with "a" in it']: (v) => isEqualWith(v, 'data[].name', (a) => a.every(b => b.toLowerCase().includes('a')))
     },), config, tags)
 
     testGetAssert("with productCategory=Snack param", featureName, route, { productCategory: "Snack" }, headers, combine(positiveTestCases, {
