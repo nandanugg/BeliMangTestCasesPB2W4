@@ -48,6 +48,12 @@ export default function () {
     });
 
     if (config.LOAD_TEST) {
+        // const merchantToAdd = getAllPregeneratedMerchants(client)
+        // merchantToAdd.merchant.forEach(m => {
+        //     assignPregeneratedMerchant(client, { merchantId: generateRandomPassword(), pregeneratedId: m.pregeneratedId })
+        // })
+        // let allNearestMerchantLocations = getAllMerchantNearestLocations(client)
+        // console.log(allNearestMerchantLocations)
         return // stub
     }
 
