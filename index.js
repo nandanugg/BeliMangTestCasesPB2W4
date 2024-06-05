@@ -57,18 +57,16 @@ export default function () {
     checkRes(admin, "Admin Login failed")
 
     const merchantToAdd = getAllPregeneratedMerchants(client)
-    let merchants = []
 
-    let merchant = MerchantPostTest(admin, merchantToAdd.merchant.pop(), config, { feature: "Merchant Post" })
-    checkRes(merchant, "Merchant Post failed")
-    merchants.push(merchant)
+    const merchantFromPost = MerchantPostTest(admin, merchantToAdd.merchant.pop(), config, { feature: "Merchant Post" })
+    checkRes(merchantFromPost, "Merchant Post failed")
 
+    // slice the last element due to [].pop() method doesn't remove the last element in k6, it only nulls the last element
     merchantToAdd.merchant = merchantToAdd.merchant.slice(0, merchantToAdd.merchant.length - 1)
-    merchant = MerchantGetTest(admin, merchantToAdd.merchant, config, { feature: "Merchant Get" })
-    checkRes(merchant, "Merchant Get failed")
-    merchants.push(merchant)
+    const merchantFromGet = MerchantGetTest(admin, merchantToAdd.merchant, config, { feature: "Merchant Get" })
+    checkRes(merchantFromGet, "Merchant Get failed")
 
-    merchants.forEach(m => {
+    merchantFromGet.concat(merchantFromPost).forEach(m => {
         assignPregeneratedMerchant(client, { merchantId: m.merchantId, pregeneratedId: m.pregeneratedId })
     });
 
