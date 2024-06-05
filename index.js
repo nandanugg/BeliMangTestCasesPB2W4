@@ -87,11 +87,11 @@ export default function () {
     user = UserLoginTest(user, config, { feature: "User Login" })
     checkRes(user, "User Login failed")
 
-    let allNearestMerchantLocations = getAllMerchantNearestLocations(config)
+    let allNearestMerchantLocations = getAllMerchantNearestLocations(client)
     checkRes(allNearestMerchantLocations, "Get all nearest merchant locations failed")
     GetNearbyMerchantTest(user, allNearestMerchantLocations.records[0], config, { feature: "Get Nearby Merchant" })
 
-    let allMerchantRoutes = getAllMerchantRoutes(config)
+    let allMerchantRoutes = getAllMerchantRoutes(client)
     checkRes(allMerchantRoutes, "Get all merchant routes failed")
     const estimateId = EstimateOrderTest(user, admin, allMerchantRoutes.zone[0], allMerchantRoutes.zone[1], config, { feature: "Estimate Order" })
     checkRes(estimateId, "Estimate Order failed")
