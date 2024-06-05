@@ -63,5 +63,5 @@ export function assignPregeneratedMerchant(grpcClient, assignMerchant) {
  * @param {import("k6/net/grpc").Response} resp 
  */
 export function logGrpcError(resp) {
-    console.error(`Error grpc: code = ${resp.status}, msg = ${resp.message}`);
+    console.error(`Error grpc: code = ${resp.status}, msg = ${JSON.stringify(resp.message)}`);
 }
