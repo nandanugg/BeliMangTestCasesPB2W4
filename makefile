@@ -6,6 +6,10 @@ test:
 	git pull origin main;
 	k6 run --vus 1 --iterations 1 index.js;
 
+load-test:
+	git pull origin main;
+	LOAD_TEST=true k6 run --vus 1 --iterations 1 index.js;
+
 test-debug:
 	git pull origin main;
 	DEBUG_ALL=true k6 run --vus 1 --iterations 1 index.js;

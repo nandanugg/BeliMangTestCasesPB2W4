@@ -30,7 +30,7 @@
  * Represents a MerchantNearestRecord.
  * @typedef {Object} MerchantNearestRecord
  * @property {LocationPoint} startingPoint - The starting location point.
- * @property {Object.<number, Merchant>} merchants - A map where the key is an int64 and the value is a Merchant object.
+ * @property {Object.<string, Merchant>} merchants - A map where the key is an int64 and the value is a Merchant object.
  */
 
 /**
@@ -55,7 +55,7 @@
 /**
  * Represents generated routes.
  * @typedef {Object} GeneratedRoutes
- * @property {Object.<number, Merchant>} generatedRoutes - A map where the key is an int64 and the value is a Merchant object.
+ * @property {Object.<string, Merchant>} generatedRoutes - A map where the key is an int64 and the value is a Merchant object.
  * @property {LocationPoint} startingPoint - The starting location point.
  * @property {number} totalDistance - The total distance of the route.
  * @property {number} totalDuration - The total duration of the route.

@@ -70,7 +70,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         orders: [],
     }
     for (let i = 0; i < Object.keys(selectedZone1Record.merchants).length; i++) {
-        const currentMerchant = selectedZone1Record.generatedRoutes[i]
+        const currentMerchant = selectedZone1Record.generatedRoutes[`${i}`]
         const items = merchantItemMap[currentMerchant.merchantId]
         const itemsToAdd = []
         items.forEach(item => {

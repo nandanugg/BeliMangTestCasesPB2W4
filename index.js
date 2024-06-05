@@ -3,7 +3,7 @@ import { config } from "./k6/entity/config.js";
 import { initMerchantNearestLocations, initPegeneratedTSPMerchants, initZonesWithPregeneratedMerchants, resetAll } from "./k6/repository/initCaddyRepository.js";
 import { assignPregeneratedMerchant, getAllMerchantNearestLocations, getAllMerchantRoutes, getAllPregeneratedMerchants } from "./k6/repository/getterCaddyRepository.js";
 import { AdminRegisterTest } from "./k6/tests/auth/adminRegisterTest.js";
-import { fail } from "k6";
+import { fail, sleep } from "k6";
 import { AdminLoginTest } from "./k6/tests/auth/adminLoginTest.js";
 import { UserRegisterTest } from "./k6/tests/auth/userRegisterTest.js";
 import { UserLoginTest } from "./k6/tests/auth/userLoginTest.js";
@@ -15,6 +15,7 @@ import { EstimateOrderTest } from "./k6/tests/purchase/estimateOrderTest.js";
 import { GetNearbyMerchantTest } from "./k6/tests/purchase/getNearbyMerchantTest.js";
 import { OrderTest } from "./k6/tests/purchase/orderTest.js";
 import { GetOrderTest } from "./k6/tests/purchase/getOrderTest.js";
+import { generateRandomPassword } from "./k6/helpers/generator.js";
 
 const client = new grpc.Client();
 client.load([], 'contract.proto');
@@ -66,7 +67,8 @@ export default function () {
     const merchantFromGet = MerchantGetTest(admin, merchantToAdd.merchant, config, { feature: "Merchant Get" })
     checkRes(merchantFromGet, "Merchant Get failed")
 
-    merchantFromGet.concat(merchantFromPost).forEach(m => {
+    const merchants = merchantFromGet.concat(merchantFromPost)
+    merchants.forEach(m => {
         assignPregeneratedMerchant(client, { merchantId: m.merchantId, pregeneratedId: m.pregeneratedId })
     });
 

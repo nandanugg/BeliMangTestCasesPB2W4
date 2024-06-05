@@ -38,7 +38,7 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
 
     const nearestMerchantIdToVerify = []
     for (let i = 0; i < 5; i++) {
-        nearestMerchantIdToVerify.push(nearestRecord.merchants[i].merchantId)
+        nearestMerchantIdToVerify.push(nearestRecord.merchants[`${i}`].merchantId)
     }
 
     const positiveTestCases = {
