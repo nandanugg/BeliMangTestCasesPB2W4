@@ -38,7 +38,7 @@ func (service *MerchantService) GetAllMerchantRoutes() ([]*entity.MerchantZoneRe
 	zoneRecords := service.MerchantZoneRecord
 
 	for _, zone := range zoneRecords {
-		for preRegeneratedId := range zone.MerchantPregeneratedId {
+		for _, preRegeneratedId := range zone.MerchantPregeneratedId {
 			_, isExists := service.AssignedMerchants[entity.PregeneratedId(fmt.Sprint(preRegeneratedId))]
 			if !isExists {
 				return nil, errors.New("some merchant is still not assigned")
