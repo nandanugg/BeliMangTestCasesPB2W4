@@ -61,7 +61,7 @@ export function MerchantGetTest(user, rawMerchants, config, tags) {
             }
             const postRes = testPostJsonAssert("add merchant for search", featureName, route, merchantToAdd, headers, {}, config, tags)
             if (postRes.isSuccess) {
-                addedMerchants.push(combine(merchantToAdd, { merchantId: postRes.res.json().merchantId }))
+                addedMerchants.push(combine(merchantToAdd, { merchantId: postRes.res.json().merchantId, pregeneratedId: merchant.pregeneratedId }))
             }
         });
 
