@@ -72,7 +72,7 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
 
 
     testGetAssert("no param", featureName, route, {}, headers, combine(positiveTestCases, {
-        ['should have the correct nearest merchant']: (v) => isEqualWith(v, 'data.merchant[].merchantId', (e => e.every(a => nearestMerchantIdToVerify.includes(a))))
+        ['should have the correct nearest merchant']: (v) => isEqualWith(v, 'data[].merchant.merchantId', (e => e.every(a => nearestMerchantIdToVerify.includes(a))))
     }), config, tags)
 
     testGetAssert("with name=a param", featureName, route, { name: "a" }, headers, combine(positiveTestCases, {
