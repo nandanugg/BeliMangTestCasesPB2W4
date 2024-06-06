@@ -93,7 +93,7 @@ export default function () {
 
     let allNearestMerchantLocations = getAllMerchantNearestLocations(client)
     checkRes(allNearestMerchantLocations, "Get all nearest merchant locations failed")
-    GetNearbyMerchantTest(user, allNearestMerchantLocations.records[0], config, { feature: "Get Nearby Merchant" })
+    GetNearbyMerchantTest(user, allNearestMerchantLocations.zones[0].records[0], config, { feature: "Get Nearby Merchant" })
 
     let allMerchantRoutes = getAllMerchantRoutes(client)
     checkRes(allMerchantRoutes, "Get all merchant routes failed")

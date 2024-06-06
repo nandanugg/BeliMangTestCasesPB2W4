@@ -3,7 +3,7 @@ import grpc from "k6/net/grpc";
 /**
  * 
  * @param {grpc.Client} grpcClient
- * @returns {null | import("../entity/merchant").MerchantNearestRecordZone}
+ * @returns {null | import("../entity/merchant").AllMerchantNearestRecord}
  */
 export function getAllMerchantNearestLocations(grpcClient) {
     const resp = grpcClient.invoke("pb.MerchantService/GetAllMerchantNearestLocations", {});
