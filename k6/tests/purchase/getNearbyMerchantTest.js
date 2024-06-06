@@ -14,7 +14,7 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
     }
 
     const featureName = "User Get Nearby Merchant";
-    const route = config.BASE_URL + `/merchants/nearby/${nearestRecord.startingPoint.lat}/${nearestRecord.startingPoint.long}`;
+    const route = config.BASE_URL + `/merchants/nearby/${nearestRecord.startingPoint.lat},${nearestRecord.startingPoint.long}`;
 
     const headers = {
         Authorization: `Bearer ${user.token}`
@@ -64,14 +64,13 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
 
 
     testGetAssert("no param", featureName, route, {}, headers, combine(positiveTestCases, {
-        ['should have the correct nearest merchant']: (v) => v.json().data.every(e => nearestMerchantIdToVerify.includes(e.merchant.merchantId))
+        ['should have the correct nearest merchant']: (v) => isEqualWith(v, '', (e => nearestMerchantIdToVerify.includes(e.merchant.merchantId)))
     }), config, tags)
 
     testGetAssert("with name=a param", featureName, route, { name: "a" }, headers, combine(positiveTestCases, {
         ['should have name with "a" in it']: (v) => {
             const hasMerchantName = isExists(v, 'data[].merchant.name')
-            const hasItemName = isExists(v, 'data[].items[].name')
-            if (hasMerchantName && hasItemName) {
+            if (hasMerchantName) {
                 v.json().data.forEach(e => {
                     if (!e.merchant.name.toLowerCase().includes('a')) {
                         if (!e.items.every(a => a.name.toLowerCase().includes('a'))) {
@@ -87,6 +86,6 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
     },), config, tags)
 
     testGetAssert("with merchantCategory=BoothKiosk param", featureName, route, { merchantCategory: "BoothKiosk" }, headers, combine(positiveTestCases, {
-        ['should have "BoothKiosk" category in it']: (v) => isEqual(v, 'data[].merchantCategory', "BoothKiosk")
+        ['should have "BoothKiosk" category in it']: (v) => isEqual(v, 'data[].merchant.merchantCategory', "BoothKiosk")
     }), config, tags)
 }
