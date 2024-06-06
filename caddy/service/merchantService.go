@@ -112,10 +112,10 @@ func (service *MerchantService) InitPegeneratedTSPMerchants(generateCount int) {
 				Lat: merchantZone.EndZoneRange.Lat, Long: merchantZone.EndZoneRange.Long,
 			})
 
-			// select random 2-8 merchant pregeneratedId from the zone
+			// select random 5-10 merchant pregeneratedId from the zone
 			selectedMerchant := make([]*entity.Merchant, 0)
 			merchantCount := len(merchantZone.MerchantPregeneratedId)
-			itemCount := rand.IntN(7) + 2
+			itemCount := rand.IntN(6) + 5
 			rand.Shuffle(merchantCount, func(i, j int) {
 				merchantZone.MerchantPregeneratedId[i], merchantZone.MerchantPregeneratedId[j] = merchantZone.MerchantPregeneratedId[j], merchantZone.MerchantPregeneratedId[i]
 			})

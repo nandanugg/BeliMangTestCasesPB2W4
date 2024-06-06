@@ -36,9 +36,17 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
     }
 
 
+    if (!config.LOAD_TEST) {
+        console.log("five nearest location according to the test case")
+        console.log("starting point: ", nearestRecord.startingPoint)
+    }
     const nearestMerchantIdToVerify = []
     for (let i = 0; i < 5; i++) {
-        nearestMerchantIdToVerify.push(nearestRecord.merchants[`${i}`].merchantId)
+        const currentNearestMerchant = nearestRecord.merchants[`${i}`].merchantId
+        nearestMerchantIdToVerify.push(currentNearestMerchant)
+        if (!config.LOAD_TEST) {
+            console.log(`nearest merchant ${i}:`, currentNearestMerchant)
+        }
     }
 
     const positiveTestCases = {
