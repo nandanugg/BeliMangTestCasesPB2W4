@@ -77,11 +77,10 @@ export default function () {
         assignPregeneratedMerchant(client, { merchantId: m.merchantId, pregeneratedId: m.pregeneratedId })
     });
 
-    const merchantToAddItem = merchantFromPost.shift()
-    let merchantItems = MerchantItemGetTest(admin, merchantToAddItem, 10, config, { feature: "Merchant Item Get" })
+    let merchantItems = MerchantItemGetTest(admin, merchantFromPost, 10, config, { feature: "Merchant Item Get" })
     checkRes(merchantItems, "Merchant Item Get failed")
 
-    let merchantItem = MerchantItemPostTest(admin, merchantToAddItem, config, { feature: "Merchant Item Post" })
+    let merchantItem = MerchantItemPostTest(admin, merchantFromPost, config, { feature: "Merchant Item Post" })
     checkRes(merchantItem, "Merchant Item Post failed")
     merchantItems.push(merchantItem)
 
