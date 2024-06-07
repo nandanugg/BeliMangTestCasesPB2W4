@@ -24,8 +24,8 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         Authorization: `Bearer ${user.token}`
     }
 
-    const selectedZone1Record = zone1.routes[generateRandomNumber(0, zone1.records.length - 1)]
-    const selectedZone2Record = zone2.routes[generateRandomNumber(0, zone2.records.length - 1)]
+    const selectedZone1Record = zone1.routes[generateRandomNumber(0, zone1.routes.length - 1)]
+    const selectedZone2Record = zone2.routes[generateRandomNumber(0, zone2.routes.length - 1)]
     const zone1StartingPoint = selectedZone1Record.startingPoint
     const zone2StartingPoint = selectedZone2Record.startingPoint
 
