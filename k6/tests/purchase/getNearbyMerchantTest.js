@@ -45,7 +45,8 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
         const currentNearestMerchant = nearestRecord.merchants[`${i}`].merchantId
         nearestMerchantIdToVerify.push(currentNearestMerchant)
         if (!config.LOAD_TEST) {
-            console.log(`nearest merchant ${i}:`, currentNearestMerchant)
+            console.log(`nearest merchant ${i}:`, nearestRecord.merchants[`${i}`].merchantId)
+            console.log("location:", nearestRecord.merchants[`${i}`].location,)
         }
     }
 
