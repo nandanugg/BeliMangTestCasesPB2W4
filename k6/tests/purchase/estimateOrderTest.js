@@ -24,26 +24,25 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         Authorization: `Bearer ${user.token}`
     }
 
-    const selectedZone1Record = zone1.routes[generateRandomNumber(0, zone1.routes.length - 1)]
-    const selectedZone2Record = zone2.routes[generateRandomNumber(0, zone2.routes.length - 1)]
-    const zone1StartingPoint = selectedZone1Record.startingPoint
-    const zone2StartingPoint = selectedZone2Record.startingPoint
+    const selectedZone1Route = zone1.routes[generateRandomNumber(0, zone1.routes.length - 1)]
+    const selectedZone2Route = zone2.routes[generateRandomNumber(0, zone2.routes.length - 1)]
+    const zone1StartingPoint = selectedZone1Route.startingPoint
+    const zone2StartingPoint = selectedZone2Route.startingPoint
 
     /** @type {Record<string, import("../../entity/merchantItem.js").MerchantItem[]>} */
     const merchantItemMap = {}
-    Object.values(
-        Object.keys(selectedZone1Record.generatedRoutes)
-            .concat(Object.keys(selectedZone2Record.generatedRoutes)))
-        .forEach(merchantId => {
+    Object.values(selectedZone1Route.generatedRoutes)
+        .concat(Object.values(selectedZone2Route.generatedRoutes))
+        .forEach(merchant => {
             const res = testGetAssert("get merchant items", featureName,
-                config.BASE_URL + `/admin/merchants/${merchantId}/items`, {}, {
+                config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`, {}, {
                 Authorization: `Bearer ${admin.token}`
             }, {
                 ['should return 200']: (v) => v.status === 200,
                 ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
             }, config, tags)
             if (res.isSuccess) {
-                merchantItemMap[merchantId] = res.res.json().data
+                merchantItemMap[merchant.merchantId] = res.res.json().data
             }
         });
 
@@ -72,8 +71,8 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         userLocation: { lat: zone2StartingPoint.lat, long: zone2StartingPoint.long },
         orders: [],
     }
-    for (let i = 0; i < Object.keys(selectedZone1Record.merchants).length; i++) {
-        const currentMerchant = selectedZone1Record.generatedRoutes[`${i}`]
+    for (let i = 0; i < Object.keys(selectedZone1Route.generatedRoutes).length; i++) {
+        const currentMerchant = selectedZone1Route.generatedRoutes[`${i}`]
         const items = merchantItemMap[currentMerchant.merchantId]
         const itemsToAdd = []
         items.forEach(item => {
@@ -172,7 +171,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         ['should have totalPrice and equal to calculated total']: (v) => isEqual(v, 'totalPrice', positivePayloadTotalPrice),
         ['should have calculatedEstimateId']: (v) => isExists(v, 'calculatedEstimateId'),
         ['should have estimatedDeliveryTimeInMinutes and not far from precalculated result']:
-            (v) => isEqualWith(v, 'estimatedDeliveryTimeInMinutes', (a) => a >= selectedZone1Record.totalDuration - 5 && a <= selectedZone1Record.totalDuration + 6)
+            (v) => isEqualWith(v, 'estimatedDeliveryTimeInMinutes', (a) => a >= selectedZone1Route.totalDuration - 5 && a <= selectedZone1Route.totalDuration + 6)
     }, config, tags)
 
     if (res.isSuccess) {

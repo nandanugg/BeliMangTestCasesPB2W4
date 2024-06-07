@@ -52,8 +52,6 @@ export default function () {
         // merchantToAdd.merchant.forEach(m => {
         //     assignPregeneratedMerchant(client, { merchantId: generateRandomPassword(), pregeneratedId: m.pregeneratedId })
         // })
-        // let allNearestMerchantLocations = getAllMerchantNearestLocations(client)
-        // console.log(allNearestMerchantLocations)
         return // stub
     }
 
