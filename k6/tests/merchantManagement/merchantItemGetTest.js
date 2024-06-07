@@ -55,10 +55,6 @@ export function MerchantItemGetTest(user, merchant, addItemCount, config, tags) 
                 productCategory: "Snack",
                 imageUrl: generateRandomImageUrl(),
                 price: generateRandomNumber(1000, 10000),
-                location: {
-                    lat: merchant.location.lat,
-                    long: merchant.location.long
-                }
             }
             const postRes = testPostJsonAssert("add merchant item for search", featureName, route, merchantItemToAdd, headers, {}, config, tags)
             if (postRes.isSuccess) {
