@@ -132,13 +132,30 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         }, config, tags)
 
         const testObjects = generateTestObjects({
-            merchantId: { type: "string", notNull: true },
-            isStartingPoint: { type: "boolean", notNull: true },
-            items: {
-                type: 'array', items: {
-                    type: 'object', properties: {
-                        itemId: { type: "string", notNull: true },
-                        quantity: { type: "number", notNull: true }
+            userLocation: {
+                type: 'object',
+                properties: {
+                    lat: { type: 'number' },
+                    long: { type: 'number' }
+                }
+            },
+            orders: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        merchantId: { type: 'string' },
+                        isStartingPoint: { type: 'boolean' },
+                        items: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    itemId: { type: 'string' },
+                                    quantity: { type: 'number' }
+                                }
+                            }
+                        }
                     }
                 }
             }
