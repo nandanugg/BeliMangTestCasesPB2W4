@@ -31,18 +31,21 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
 
     /** @type {Record<string, import("../../entity/merchantItem.js").MerchantItem[]>} */
     const merchantItemMap = {}
-    Object.keys(selectedZone1Record).concat(Object.keys(selectedZone2Record)).forEach(merchantId => {
-        const res = testGetAssert("no param", featureName,
-            config.BASE_URL + `/admin/merchants/${merchantId}/items`, {}, {
-            Authorization: `Bearer ${admin.token}`
-        }, {
-            ['should return 200']: (v) => v.status === 200,
-            ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
-        }, config, tags)
-        if (res.isSuccess) {
-            merchantItemMap[merchantId] = res.res.json().data
-        }
-    });
+    Object.values(
+        Object.keys(selectedZone1Record.generatedRoutes)
+            .concat(Object.keys(selectedZone2Record.generatedRoutes)))
+        .forEach(merchantId => {
+            const res = testGetAssert("get merchant items", featureName,
+                config.BASE_URL + `/admin/merchants/${merchantId}/items`, {}, {
+                Authorization: `Bearer ${admin.token}`
+            }, {
+                ['should return 200']: (v) => v.status === 200,
+                ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
+            }, config, tags)
+            if (res.isSuccess) {
+                merchantItemMap[merchantId] = res.res.json().data
+            }
+        });
 
     let positivePayloadTotalPrice = 0
     const positivePayload = {
