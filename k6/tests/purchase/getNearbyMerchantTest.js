@@ -30,7 +30,7 @@ export function GetNearbyMerchantTest(user, nearestRecord, config, tags) {
         testGetAssert(
             "invalid lat long",
             featureName,
-            `${config.BASE_URL}/merchants/nearby/a/b`, {}, headers, {
+            `${config.BASE_URL}/merchants/nearby/a,b`, {}, headers, {
             ['should return 400']: (v) => v.status === 400
         }, config, tags)
     }
