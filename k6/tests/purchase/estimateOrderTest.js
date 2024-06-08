@@ -51,7 +51,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                         imageUrl: generateRandomImageUrl(),
                         price: generateRandomNumber(1, 1000000),
                     }
-                    const addRes = testPostJsonAssert("valid payload",
+                    const addRes = testPostJsonAssert("add merchant items if not exists",
                         featureName,
                         config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`,
                         merchantItemToAdd,
