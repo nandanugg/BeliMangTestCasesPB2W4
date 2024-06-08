@@ -198,10 +198,10 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
             ['should return 400']: (res) => res.status === 400,
         }, config, tags);
         testPostJsonAssert("all false item id", featureName, route, negativePayloadWithAllFalseItemId, headers, {
-            ['should return 401']: (res) => res.status === 401,
+            ['should return 404']: (res) => res.status === 404,
         }, config, tags);
         testPostJsonAssert("all false merchant id", featureName, route, negativePayloadWithAllFalseMerchantId, headers, {
-            ['should return 400']: (res) => res.status === 400,
+            ['should return 404']: (res) => res.status === 404,
         }, config, tags);
         testPostJsonAssert("with far user location", featureName, route, negativePayloadWithFarUserLocation, headers, {
             ['should return 400']: (res) => res.status === 400,
