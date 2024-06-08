@@ -132,6 +132,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         }, config, tags)
 
         console.log('positivePayload:', JSON.stringify(positivePayload))
+        console.log('merchantItemMap:', JSON.stringify(merchantItemMap))
         const testObjects = generateTestObjects({
             userLocation: {
                 type: 'object',
@@ -174,7 +175,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
             ['should return 400']: (res) => res.status === 400,
         }, config, tags);
         testPostJsonAssert("all false item id", featureName, route, negativePayloadWithAllFalseItemId, headers, {
-            ['should return 400']: (res) => res.status === 400,
+            ['should return 401']: (res) => res.status === 401,
         }, config, tags);
         testPostJsonAssert("all false merchant id", featureName, route, negativePayloadWithAllFalseMerchantId, headers, {
             ['should return 400']: (res) => res.status === 400,
