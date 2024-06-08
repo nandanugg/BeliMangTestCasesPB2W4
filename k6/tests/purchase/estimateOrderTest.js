@@ -131,6 +131,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
             ['should return 400']: (v) => v.status === 400
         }, config, tags)
 
+        console.log('positivePayload:', JSON.stringify(positivePayload))
         const testObjects = generateTestObjects({
             userLocation: {
                 type: 'object',
