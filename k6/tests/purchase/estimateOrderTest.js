@@ -64,7 +64,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                     if (addRes.isSuccess) {
                         merchantItemToAdd.itemId = addRes.res.json().itemId
                     }
-                    merchantItemMap[merchant.merchantId] = merchantItemToAdd
+                    merchantItemMap[merchant.merchantId] = [merchantItemToAdd]
                 } else {
                     merchantItemMap[merchant.merchantId] = res.res.json().data
                 }
