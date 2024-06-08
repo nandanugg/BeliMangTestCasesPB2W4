@@ -156,6 +156,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         }, config, tags)
 
         console.log('positivePayload:', positivePayload)
+        console.log('merchantItemMap:', merchantItemMap)
         const testObjects = generateTestObjects({
             userLocation: {
                 type: 'object',
