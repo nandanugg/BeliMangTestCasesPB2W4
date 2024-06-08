@@ -36,12 +36,13 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
         .concat(Object.values(selectedZone2Route.generatedRoutes))
         .forEach(merchant => {
             const res = testGetAssert("get merchant items", featureName,
-                config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`, {}, {
-                Authorization: `Bearer ${admin.token}`
-            }, {
-                ['should return 200']: (v) => v.status === 200,
-                ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
-            }, config, tags)
+                config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`, {},
+                { Authorization: `Bearer ${admin.token}` },
+                {
+                    ['should return 200']: (v) => v.status === 200,
+                    ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
+                },
+                config, tags)
             if (res.isSuccess) {
                 if (res.res.json().data.length == 0) {
                     const merchantItemToAdd = {
@@ -50,10 +51,16 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                         imageUrl: generateRandomImageUrl(),
                         price: generateRandomNumber(1, 1000000),
                     }
-                    const addRes = testPostJsonAssert("valid payload", featureName, config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`, merchantItemToAdd, headers, {
-                        ['should return 201']: (v) => v.status === 201,
-                        ['should have itemId']: (v) => isExists(v, 'itemId'),
-                    }, config, tags)
+                    const addRes = testPostJsonAssert("valid payload",
+                        featureName,
+                        config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`,
+                        merchantItemToAdd,
+                        { Authorization: `Bearer ${admin.token}` },
+                        {
+                            ['should return 201']: (v) => v.status === 201,
+                            ['should have itemId']: (v) => isExists(v, 'itemId'),
+                        },
+                        config, tags)
                     if (addRes.isSuccess) {
                         merchantItemToAdd.itemId = addRes.res.json().itemId
                     }
