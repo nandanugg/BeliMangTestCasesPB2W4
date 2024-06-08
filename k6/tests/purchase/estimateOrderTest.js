@@ -50,7 +50,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                         imageUrl: generateRandomImageUrl(),
                         price: generateRandomNumber(1, 1000000),
                     }
-                    const addRes = testPostJsonAssert("valid payload", featureName, `/admin/merchants/${merchant.merchantId}/items`, merchantItemToAdd, headers, {
+                    const addRes = testPostJsonAssert("valid payload", featureName, config.BASE_URL + `/admin/merchants/${merchant.merchantId}/items`, merchantItemToAdd, headers, {
                         ['should return 201']: (v) => v.status === 201,
                         ['should have itemId']: (v) => isExists(v, 'itemId'),
                     }, config, tags)
