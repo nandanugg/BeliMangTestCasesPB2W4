@@ -1,7 +1,8 @@
 import { IsAdmin } from "../../entity/admin.js";
+import { generateRandomMerchantItemCategory } from "../../entity/merchantItem.js";
 import { IsUser } from "../../entity/user.js";
 import { isEqual, isEqualWith, isExists } from "../../helpers/assertion.js";
-import { generateRandomNumber, generateTestObjects } from "../../helpers/generator.js";
+import { generateRandomImageUrl, generateRandomName, generateRandomNumber, generateTestObjects } from "../../helpers/generator.js";
 import { testPostJsonAssert, testGetAssert } from "../../helpers/request.js";
 
 /**
@@ -42,6 +43,22 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                 ['should have itemId']: (v) => isExists(v, 'data[].itemId'),
             }, config, tags)
             if (res.isSuccess) {
+                if (res.res.json().data.length == 0) {
+                    const merchantItemToAdd = {
+                        name: generateRandomName(),
+                        productCategory: generateRandomMerchantItemCategory(),
+                        imageUrl: generateRandomImageUrl(),
+                        price: generateRandomNumber(1, 1000000),
+                    }
+                    const addRes = testPostJsonAssert("valid payload", featureName, `/admin/merchants/${merchant.merchantId}/items`, merchantItemToAdd, headers, {
+                        ['should return 201']: (v) => v.status === 201,
+                        ['should have itemId']: (v) => isExists(v, 'itemId'),
+                    }, config, tags)
+                    if (addRes.isSuccess) {
+                        merchantItemToAdd.itemId = addRes.res.json().itemId
+                    }
+                    merchantItemMap[merchant.merchantId] = merchantItemToAdd
+                }
                 merchantItemMap[merchant.merchantId] = res.res.json().data
             }
         });
@@ -131,8 +148,6 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
             ['should return 400']: (v) => v.status === 400
         }, config, tags)
 
-        console.log('positivePayload:', JSON.stringify(positivePayload))
-        console.log('merchantItemMap:', JSON.stringify(merchantItemMap))
         const testObjects = generateTestObjects({
             userLocation: {
                 type: 'object',

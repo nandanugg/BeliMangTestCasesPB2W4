@@ -1,6 +1,7 @@
 import { IsAdmin } from "../../entity/admin.js";
 import { isMerchant } from "../../entity/merchant.js";
 import { generateRandomMerchantItemCategory } from "../../entity/merchantItem.js";
+import { isExists } from "../../helpers/assertion.js";
 import { combine, generateRandomImageUrl, generateRandomName, generateRandomNumber, generateTestObjects } from "../../helpers/generator.js";
 import { testPostJsonAssert } from "../../helpers/request.js";
 
@@ -62,7 +63,8 @@ export function MerchantItemPostTest(user, merchant, config, tags) {
     }
 
     const res = testPostJsonAssert("valid payload", featureName, route, positivePayload, headers, {
-        ['should return 201']: (v) => v.status === 201
+        ['should return 201']: (v) => v.status === 201,
+        ['should have itemId']: (v) => isExists(v, 'itemId'),
     }, config, tags)
 
     if (res.isSuccess) {
