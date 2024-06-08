@@ -187,6 +187,8 @@ export function generateTestObjects(schema, validTemplate) {
     }
 
     function generateViolationsForProp(propPath, propRules, parentValue) {
+        if (!parentValue) parentValue = {}; // Initialize parentValue if undefined
+
         if (propRules.notNull) {
             addViolation(propPath, null);
         }
@@ -213,7 +215,8 @@ export function generateTestObjects(schema, validTemplate) {
             generateDataTypeViolations(propPath, propRules.type);
         }
         switch (propRules.type) {
-            case ("string", "string-param"):
+            case "string":
+            case "string-param":
                 if (propRules.minLength !== undefined) {
                     addViolation(propPath, "a".repeat(propRules.minLength - 1));
                 }
@@ -246,7 +249,7 @@ export function generateTestObjects(schema, validTemplate) {
                                 generateViolationsForProp(
                                     `${propPath}[0].${nestedProp}`,
                                     nestedRules,
-                                    parentValue[nestedProp],
+                                    parentValue[0] ? parentValue[0][nestedProp] : undefined,
                                 );
                             },
                         );
@@ -275,4 +278,6 @@ export function generateTestObjects(schema, validTemplate) {
 
     return violations;
 }
+
+
 
