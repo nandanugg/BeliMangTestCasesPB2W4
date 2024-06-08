@@ -65,8 +65,9 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
                         merchantItemToAdd.itemId = addRes.res.json().itemId
                     }
                     merchantItemMap[merchant.merchantId] = merchantItemToAdd
+                } else {
+                    merchantItemMap[merchant.merchantId] = res.res.json().data
                 }
-                merchantItemMap[merchant.merchantId] = res.res.json().data
             }
         });
 
