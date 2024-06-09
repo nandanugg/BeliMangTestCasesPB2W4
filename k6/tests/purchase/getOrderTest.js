@@ -1,4 +1,5 @@
 import { IsAdmin } from "../../entity/admin.js";
+import { IsUser } from "../../entity/user.js";
 import { isEqual, isEqualWith, isExists, isTotalDataInRange, isValidDate } from "../../helpers/assertion.js";
 import { combine } from "../../helpers/generator.js";
 import { testGetAssert } from "../../helpers/request.js";
