@@ -16,16 +16,28 @@ type LocationPoint struct {
 	Long float64 `json:"long"`
 }
 
-func GenerateFlatSquareLocationBounds(startingPoint LocationPoint, area float64) (float64, float64, float64, float64) {
-	sideLength := math.Sqrt(area)
+// Calculate the distance in degrees for a given distance in kilometers
+func KmToDegrees(distanceKm float64) float64 {
+	const earthRadiusKm = 6371.0
+	return distanceKm / earthRadiusKm * (180 / math.Pi)
+}
 
-	x1 := startingPoint.Lat
-	y1 := startingPoint.Long
+// CalculateBottomRightPoint calculates the bottom-right point of a square on the Earth's surface
+// starting from a given top-left point and an area in square kilometers
+func CalculateAreaSquare(startPoint LocationPoint, areaKm2 float64) LocationPoint {
+	// Calculate the side length of the square in kilometers
+	sideLengthKm := math.Sqrt(areaKm2)
 
-	x2 := x1 + sideLength
-	y2 := y1 + sideLength
+	// Convert side length to degrees
+	sideLengthDeg := KmToDegrees(sideLengthKm)
 
-	return x1, y1, x2, y2
+	// Calculate the bottom-right corner of the square
+	bottomRight := LocationPoint{
+		Lat:  startPoint.Lat - sideLengthDeg,
+		Long: startPoint.Long + sideLengthDeg,
+	}
+
+	return bottomRight
 }
 
 func GenerateRandomLocation(startingPoint, endPoint LocationPoint) LocationPoint {

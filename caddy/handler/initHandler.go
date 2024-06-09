@@ -21,7 +21,7 @@ func (h *Handler) InitPegeneratedTSPMerchants(ctx context.Context, _ *emptypb.Em
 func (h *Handler) InitZonesWithPregeneratedMerchants(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	// TODO: change this to be based on the request input
 	h.srv.InitZonesWithPregeneratedMerchants(entity.MerchantZoneOpts{
-		Area:                     1.5,
+		Area:                     1,
 		Gap:                      10,
 		NumberOfZones:            2,
 		NumberOfMerchantsPerZone: 10,

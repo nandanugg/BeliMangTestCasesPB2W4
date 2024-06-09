@@ -139,6 +139,8 @@ func (service *MerchantService) InitPegeneratedTSPMerchants(generateCount int) {
 				TotalDurationInMinute: entity.CalculateTimeInMinute(totalDistance, 40),
 				StartingIndex:         startingIndex,
 			})
+			log.Println("Distance from starting index to nearest merchant: ", entity.CalculateDistance(userLocation, routes[entity.Order(startingIndex)].Location))
+			log.Println("Distance from starting slice to nearest merchant: ", entity.CalculateDistance(userLocation, routes[0].Location))
 		}
 	}
 	log.Println("Init pregenerated TSP merchants")
@@ -153,7 +155,7 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 	// create zones contains collection of merchants
 	for i := 0; i < params.NumberOfZones; i++ {
 		// generate flat square location bounds
-		x1, y1, x2, y2 := entity.GenerateFlatSquareLocationBounds(startingPoint, params.Area)
+		endPoint := entity.CalculateAreaSquare(startingPoint, params.Area)
 
 		// create merchants for the zone
 		var pregeneratedMerchantIds []string
@@ -161,8 +163,8 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 			merchants := make(map[string]*entity.Merchant)
 
 			merchant := entity.GenerateRandomMerchant(
-				entity.LocationPoint{Lat: x1, Long: y1},
-				entity.LocationPoint{Lat: x2, Long: y2},
+				entity.LocationPoint{Lat: startingPoint.Lat, Long: startingPoint.Long},
+				entity.LocationPoint{Lat: endPoint.Lat, Long: endPoint.Long},
 			)
 			merchants[merchant.PregeneratedId] = merchant
 			service.PregeneratedMerchants[entity.PregeneratedId(merchant.PregeneratedId)] = merchant
@@ -177,13 +179,13 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 		}
 
 		service.MerchantZoneRecord = append(service.MerchantZoneRecord, &entity.MerchantZoneRecord{
-			StartZoneRange:         entity.LocationPoint{Lat: x1, Long: y1},
-			EndZoneRange:           entity.LocationPoint{Lat: x2, Long: y2},
+			StartZoneRange:         entity.LocationPoint{Lat: startingPoint.Lat, Long: startingPoint.Long},
+			EndZoneRange:           entity.LocationPoint{Lat: endPoint.Lat, Long: endPoint.Long},
 			MerchantPregeneratedId: merchantPregeneratedIds,
 		})
 
 		// update the starting point for the next loop
-		startingPoint = entity.LocationPoint{Lat: x2, Long: y2 + params.Gap}
+		startingPoint = entity.LocationPoint{Lat: endPoint.Lat, Long: endPoint.Long + entity.KmToDegrees(params.Gap)}
 	}
 	log.Println("Init zones with pregenerated merchants")
 }
