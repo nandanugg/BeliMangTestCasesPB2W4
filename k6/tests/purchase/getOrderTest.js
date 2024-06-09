@@ -70,7 +70,7 @@ export function GetOrderTest(user, config, tags) {
     },), config, tags)
 
     testGetAssert("with merchantCategory=BoothKiosk param", featureName, route, { merchantCategory: "BoothKiosk" }, headers, combine(positiveTestCases, {
-        ['should have "BoothKiosk" category in it']: (v) => isEqual(v, 'data[].merchantCategory', "BoothKiosk")
+        ['should have "BoothKiosk" category in it']: (v) => isEqual(v, 'orders[].merchant.merchantCategory', "BoothKiosk")
     }), config, tags)
 
     const paginationRes = testGetAssert("pagination", featureName, route, { limit: 2, offset: 0 }, headers, combine(positiveTestCases, {
