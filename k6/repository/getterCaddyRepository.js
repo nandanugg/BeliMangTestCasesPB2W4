@@ -15,6 +15,23 @@ export function getAllMerchantNearestLocations(grpcClient) {
 }
 
 /**
+ * Retrieves the nearest locations of a merchant.
+ * 
+ * @param {grpc.Client} grpcClient - The gRPC client.
+ * 
+ * @returns {import("../entity/merchant").MerchantNearestRecord|null} - The nearest locations of the merchant or null if there was an error.
+ */
+export function getMerchantNearestLocations(grpcClient) {
+    const resp = grpcClient.invoke("pb.MerchantService/GetMerchantNearestLocations", {});
+    if (resp.status !== grpc.StatusOK) {
+        logGrpcError(resp);
+        return null;
+    }
+    return resp.message;
+}
+
+
+/**
  * 
  * @param {grpc.Client} grpcClient 
  * @returns {null | import("../entity/merchant").AllGeneratedRoutes}
@@ -27,6 +44,40 @@ export function getAllMerchantRoutes(grpcClient) {
     }
     return resp.message
 }
+
+/**
+ * Retrieves the routes for two-zone merchants.
+ * 
+ * @param {grpc.Client} grpcClient - The gRPC client.
+ * 
+ * @returns {null | import("../entity/merchant").AllGeneratedRoutes} - The routes for two-zone merchants or null if there was an error.
+ */
+export function getTwoZoneMerchantRoutes(grpcClient) {
+    const resp = grpcClient.invoke("pb.MerchantService/GetTwoZoneMerchantRoutes", {});
+    if (resp.status !== grpc.StatusOK) {
+        logGrpcError(resp);
+        return null;
+    }
+    return resp.message;
+}
+
+/**
+ * Retrieves the routes for a merchant.
+ * 
+ * @param {grpc.Client} grpcClient - The gRPC client.
+ * 
+ * @returns {null | import("../entity/merchant").RouteZone} - The routes for the merchant or null if there was an error.
+ */
+export function getMerchantRoutes(grpcClient) {
+    const resp = grpcClient.invoke("pb.MerchantService/GetMerchantRoutes", {});
+    if (resp.status !== grpc.StatusOK) {
+        logGrpcError(resp);
+        return null;
+    }
+    return resp.message;
+}
+
+
 
 /**
  * 
@@ -57,6 +108,22 @@ export function assignPregeneratedMerchant(grpcClient, assignMerchant) {
     return resp.message
 }
 
+
+/**
+ * Retrieves a pregenerated merchant.
+ * 
+ * @param {grpc.Client} grpcClient - The gRPC client.
+ * 
+ * @returns {import("../entity/merchant").Merchant|null} - The pregenerated merchant or null if there was an error.
+ */
+export function getPregeneratedMerchant(grpcClient) {
+    const resp = grpcClient.invoke("pb.MerchantService/GetPregeneratedMerchant", {});
+    if (resp.status !== grpc.StatusOK) {
+        logGrpcError(resp);
+        return null;
+    }
+    return resp.message;
+}
 
 /**
  * 

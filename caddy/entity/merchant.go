@@ -18,11 +18,11 @@ type MerchantTSPRoute struct {
 	StartingIndex         int
 }
 
-type MerchantZoneRecord struct {
+type MerchantTSPZoneRecord struct {
 	StartZoneRange         LocationPoint
 	EndZoneRange           LocationPoint
 	MerchantPregeneratedId []PregeneratedId
-	GeneratedRoutes        []*MerchantTSPRoute
+	GeneratedTSPRoutes     []*MerchantTSPRoute
 }
 
 type MerchantZoneOpts struct {

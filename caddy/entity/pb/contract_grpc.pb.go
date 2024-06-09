@@ -22,8 +22,12 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	MerchantService_AssignPregeneratedMerchant_FullMethodName         = "/pb.MerchantService/AssignPregeneratedMerchant"
 	MerchantService_GetAllMerchantNearestLocations_FullMethodName     = "/pb.MerchantService/GetAllMerchantNearestLocations"
+	MerchantService_GetMerchantNearestLocations_FullMethodName        = "/pb.MerchantService/GetMerchantNearestLocations"
 	MerchantService_GetAllMerchantRoutes_FullMethodName               = "/pb.MerchantService/GetAllMerchantRoutes"
+	MerchantService_GetTwoZoneMerchantRoutes_FullMethodName           = "/pb.MerchantService/GetTwoZoneMerchantRoutes"
+	MerchantService_GetMerchantRoutes_FullMethodName                  = "/pb.MerchantService/GetMerchantRoutes"
 	MerchantService_GetAllPregeneratedMerchants_FullMethodName        = "/pb.MerchantService/GetAllPregeneratedMerchants"
+	MerchantService_GetPregeneratedMerchant_FullMethodName            = "/pb.MerchantService/GetPregeneratedMerchant"
 	MerchantService_InitMerchantNearestLocations_FullMethodName       = "/pb.MerchantService/InitMerchantNearestLocations"
 	MerchantService_InitPegeneratedTSPMerchants_FullMethodName        = "/pb.MerchantService/InitPegeneratedTSPMerchants"
 	MerchantService_InitZonesWithPregeneratedMerchants_FullMethodName = "/pb.MerchantService/InitZonesWithPregeneratedMerchants"
@@ -36,11 +40,15 @@ const (
 type MerchantServiceClient interface {
 	AssignPregeneratedMerchant(ctx context.Context, in *AssignMerchant, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllMerchantNearestLocations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AllMerchantNearestRecord, error)
+	GetMerchantNearestLocations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MerchantNearestRecord, error)
 	GetAllMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AllGeneratedRoutes, error)
+	GetTwoZoneMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AllGeneratedRoutes, error)
+	GetMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RouteZone, error)
 	GetAllPregeneratedMerchants(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PregeneratedMerchant, error)
-	InitMerchantNearestLocations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	InitPegeneratedTSPMerchants(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	InitZonesWithPregeneratedMerchants(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetPregeneratedMerchant(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Merchant, error)
+	InitMerchantNearestLocations(ctx context.Context, in *InitPregenerated, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	InitPegeneratedTSPMerchants(ctx context.Context, in *InitPregenerated, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	InitZonesWithPregeneratedMerchants(ctx context.Context, in *InitZonesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -70,9 +78,36 @@ func (c *merchantServiceClient) GetAllMerchantNearestLocations(ctx context.Conte
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetMerchantNearestLocations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MerchantNearestRecord, error) {
+	out := new(MerchantNearestRecord)
+	err := c.cc.Invoke(ctx, MerchantService_GetMerchantNearestLocations_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *merchantServiceClient) GetAllMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AllGeneratedRoutes, error) {
 	out := new(AllGeneratedRoutes)
 	err := c.cc.Invoke(ctx, MerchantService_GetAllMerchantRoutes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetTwoZoneMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AllGeneratedRoutes, error) {
+	out := new(AllGeneratedRoutes)
+	err := c.cc.Invoke(ctx, MerchantService_GetTwoZoneMerchantRoutes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantRoutes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RouteZone, error) {
+	out := new(RouteZone)
+	err := c.cc.Invoke(ctx, MerchantService_GetMerchantRoutes_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +123,16 @@ func (c *merchantServiceClient) GetAllPregeneratedMerchants(ctx context.Context,
 	return out, nil
 }
 
-func (c *merchantServiceClient) InitMerchantNearestLocations(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *merchantServiceClient) GetPregeneratedMerchant(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Merchant, error) {
+	out := new(Merchant)
+	err := c.cc.Invoke(ctx, MerchantService_GetPregeneratedMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) InitMerchantNearestLocations(ctx context.Context, in *InitPregenerated, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MerchantService_InitMerchantNearestLocations_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -97,7 +141,7 @@ func (c *merchantServiceClient) InitMerchantNearestLocations(ctx context.Context
 	return out, nil
 }
 
-func (c *merchantServiceClient) InitPegeneratedTSPMerchants(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *merchantServiceClient) InitPegeneratedTSPMerchants(ctx context.Context, in *InitPregenerated, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MerchantService_InitPegeneratedTSPMerchants_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -106,7 +150,7 @@ func (c *merchantServiceClient) InitPegeneratedTSPMerchants(ctx context.Context,
 	return out, nil
 }
 
-func (c *merchantServiceClient) InitZonesWithPregeneratedMerchants(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *merchantServiceClient) InitZonesWithPregeneratedMerchants(ctx context.Context, in *InitZonesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, MerchantService_InitZonesWithPregeneratedMerchants_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -130,11 +174,15 @@ func (c *merchantServiceClient) ResetAll(ctx context.Context, in *emptypb.Empty,
 type MerchantServiceServer interface {
 	AssignPregeneratedMerchant(context.Context, *AssignMerchant) (*emptypb.Empty, error)
 	GetAllMerchantNearestLocations(context.Context, *emptypb.Empty) (*AllMerchantNearestRecord, error)
+	GetMerchantNearestLocations(context.Context, *emptypb.Empty) (*MerchantNearestRecord, error)
 	GetAllMerchantRoutes(context.Context, *emptypb.Empty) (*AllGeneratedRoutes, error)
+	GetTwoZoneMerchantRoutes(context.Context, *emptypb.Empty) (*AllGeneratedRoutes, error)
+	GetMerchantRoutes(context.Context, *emptypb.Empty) (*RouteZone, error)
 	GetAllPregeneratedMerchants(context.Context, *emptypb.Empty) (*PregeneratedMerchant, error)
-	InitMerchantNearestLocations(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	InitPegeneratedTSPMerchants(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	InitZonesWithPregeneratedMerchants(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	GetPregeneratedMerchant(context.Context, *emptypb.Empty) (*Merchant, error)
+	InitMerchantNearestLocations(context.Context, *InitPregenerated) (*emptypb.Empty, error)
+	InitPegeneratedTSPMerchants(context.Context, *InitPregenerated) (*emptypb.Empty, error)
+	InitZonesWithPregeneratedMerchants(context.Context, *InitZonesRequest) (*emptypb.Empty, error)
 	ResetAll(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
@@ -149,19 +197,31 @@ func (UnimplementedMerchantServiceServer) AssignPregeneratedMerchant(context.Con
 func (UnimplementedMerchantServiceServer) GetAllMerchantNearestLocations(context.Context, *emptypb.Empty) (*AllMerchantNearestRecord, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllMerchantNearestLocations not implemented")
 }
+func (UnimplementedMerchantServiceServer) GetMerchantNearestLocations(context.Context, *emptypb.Empty) (*MerchantNearestRecord, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMerchantNearestLocations not implemented")
+}
 func (UnimplementedMerchantServiceServer) GetAllMerchantRoutes(context.Context, *emptypb.Empty) (*AllGeneratedRoutes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllMerchantRoutes not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetTwoZoneMerchantRoutes(context.Context, *emptypb.Empty) (*AllGeneratedRoutes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTwoZoneMerchantRoutes not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetMerchantRoutes(context.Context, *emptypb.Empty) (*RouteZone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMerchantRoutes not implemented")
 }
 func (UnimplementedMerchantServiceServer) GetAllPregeneratedMerchants(context.Context, *emptypb.Empty) (*PregeneratedMerchant, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPregeneratedMerchants not implemented")
 }
-func (UnimplementedMerchantServiceServer) InitMerchantNearestLocations(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedMerchantServiceServer) GetPregeneratedMerchant(context.Context, *emptypb.Empty) (*Merchant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPregeneratedMerchant not implemented")
+}
+func (UnimplementedMerchantServiceServer) InitMerchantNearestLocations(context.Context, *InitPregenerated) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitMerchantNearestLocations not implemented")
 }
-func (UnimplementedMerchantServiceServer) InitPegeneratedTSPMerchants(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedMerchantServiceServer) InitPegeneratedTSPMerchants(context.Context, *InitPregenerated) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitPegeneratedTSPMerchants not implemented")
 }
-func (UnimplementedMerchantServiceServer) InitZonesWithPregeneratedMerchants(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedMerchantServiceServer) InitZonesWithPregeneratedMerchants(context.Context, *InitZonesRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitZonesWithPregeneratedMerchants not implemented")
 }
 func (UnimplementedMerchantServiceServer) ResetAll(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
@@ -216,6 +276,24 @@ func _MerchantService_GetAllMerchantNearestLocations_Handler(srv interface{}, ct
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetMerchantNearestLocations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantNearestLocations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetMerchantNearestLocations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantNearestLocations(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MerchantService_GetAllMerchantRoutes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -230,6 +308,42 @@ func _MerchantService_GetAllMerchantRoutes_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MerchantServiceServer).GetAllMerchantRoutes(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetTwoZoneMerchantRoutes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetTwoZoneMerchantRoutes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetTwoZoneMerchantRoutes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetTwoZoneMerchantRoutes(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantRoutes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantRoutes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetMerchantRoutes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantRoutes(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -252,8 +366,26 @@ func _MerchantService_GetAllPregeneratedMerchants_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_InitMerchantNearestLocations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MerchantService_GetPregeneratedMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetPregeneratedMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetPregeneratedMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetPregeneratedMerchant(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_InitMerchantNearestLocations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitPregenerated)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -265,13 +397,13 @@ func _MerchantService_InitMerchantNearestLocations_Handler(srv interface{}, ctx 
 		FullMethod: MerchantService_InitMerchantNearestLocations_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).InitMerchantNearestLocations(ctx, req.(*emptypb.Empty))
+		return srv.(MerchantServiceServer).InitMerchantNearestLocations(ctx, req.(*InitPregenerated))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MerchantService_InitPegeneratedTSPMerchants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(InitPregenerated)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -283,13 +415,13 @@ func _MerchantService_InitPegeneratedTSPMerchants_Handler(srv interface{}, ctx c
 		FullMethod: MerchantService_InitPegeneratedTSPMerchants_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).InitPegeneratedTSPMerchants(ctx, req.(*emptypb.Empty))
+		return srv.(MerchantServiceServer).InitPegeneratedTSPMerchants(ctx, req.(*InitPregenerated))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MerchantService_InitZonesWithPregeneratedMerchants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(InitZonesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -301,7 +433,7 @@ func _MerchantService_InitZonesWithPregeneratedMerchants_Handler(srv interface{}
 		FullMethod: MerchantService_InitZonesWithPregeneratedMerchants_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).InitZonesWithPregeneratedMerchants(ctx, req.(*emptypb.Empty))
+		return srv.(MerchantServiceServer).InitZonesWithPregeneratedMerchants(ctx, req.(*InitZonesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -340,12 +472,28 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_GetAllMerchantNearestLocations_Handler,
 		},
 		{
+			MethodName: "GetMerchantNearestLocations",
+			Handler:    _MerchantService_GetMerchantNearestLocations_Handler,
+		},
+		{
 			MethodName: "GetAllMerchantRoutes",
 			Handler:    _MerchantService_GetAllMerchantRoutes_Handler,
 		},
 		{
+			MethodName: "GetTwoZoneMerchantRoutes",
+			Handler:    _MerchantService_GetTwoZoneMerchantRoutes_Handler,
+		},
+		{
+			MethodName: "GetMerchantRoutes",
+			Handler:    _MerchantService_GetMerchantRoutes_Handler,
+		},
+		{
 			MethodName: "GetAllPregeneratedMerchants",
 			Handler:    _MerchantService_GetAllPregeneratedMerchants_Handler,
+		},
+		{
+			MethodName: "GetPregeneratedMerchant",
+			Handler:    _MerchantService_GetPregeneratedMerchant_Handler,
 		},
 		{
 			MethodName: "InitMerchantNearestLocations",

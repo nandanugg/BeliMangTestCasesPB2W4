@@ -6,47 +6,140 @@ import (
 	"log"
 	"math/rand/v2"
 	"sort"
+	"sync"
+	"sync/atomic"
 
 	"github.com/nandanugg/BeliMangTestCasesPB2W4/caddy/entity"
 )
 
 type MerchantService struct {
-	MerchantZoneRecord        []*entity.MerchantZoneRecord
+	MerchantZoneRecord        []*entity.MerchantTSPZoneRecord
 	MerchantNearestZoneRecord []*entity.MerchantNearestZoneRecord
 	PregeneratedMerchants     map[entity.PregeneratedId]*entity.Merchant
 	AssignedMerchants         map[entity.PregeneratedId]*entity.Merchant
+	merchantSize, totalCount  *int64
+	Merchants                 []*entity.Merchant
+	SequenceMutex             *sync.Mutex
+	merchantShards            []*shard
+}
+
+type shard struct {
+	merchants []*entity.Merchant
+	mutex     *sync.Mutex
+	count     int
 }
 
 func NewMerchantService() *MerchantService {
-	return &MerchantService{}
+	return &MerchantService{
+		SequenceMutex: &sync.Mutex{},
+		merchantSize:  new(int64),
+		totalCount:    new(int64),
+	}
+}
+
+func (service *MerchantService) GetPregeneratedMerchant() *entity.Merchant {
+	for {
+		total := atomic.LoadInt64(service.totalCount)
+		if total >= int64(*service.merchantSize) {
+			return nil
+		}
+
+		shardIndex := int(total) % len(service.merchantShards)
+		s := service.merchantShards[shardIndex]
+
+		s.mutex.Lock()
+		if s.count < len(s.merchants) {
+			merchant := s.merchants[s.count]
+			s.count = s.count + 1
+			atomic.AddInt64(service.totalCount, 1)
+			s.mutex.Unlock()
+			return merchant
+		}
+		s.mutex.Unlock()
+	}
 }
 
 func (service *MerchantService) GetAllMerchantNearestLocations() ([]*entity.MerchantNearestZoneRecord, error) {
-	zoneRecords := service.MerchantZoneRecord
+	zoneRecords := service.MerchantNearestZoneRecord
 	for _, zone := range zoneRecords {
-		for _, preRegeneratedId := range zone.MerchantPregeneratedId {
-			_, isExists := service.AssignedMerchants[entity.PregeneratedId(fmt.Sprint(preRegeneratedId))]
-			if !isExists {
-				return nil, errors.New("some merchant is still not assigned")
-			}
+		if !service.checkMerchantNearestRecord(zone) {
+			return nil, errors.New("some merchant is still not assigned")
 		}
 	}
 	return service.MerchantNearestZoneRecord, nil
 }
 
-func (service *MerchantService) GetAllMerchantRoutes() ([]*entity.MerchantZoneRecord, error) {
+func (service *MerchantService) GetMerchantNearestLocations() (*entity.MerchantNearestZoneRecord, error) {
+	zoneRecords := service.MerchantNearestZoneRecord
+	zone := zoneRecords[rand.IntN(len(zoneRecords))]
+	if !service.checkMerchantNearestRecord(zone) {
+		return nil, errors.New("some merchant is still not assigned")
+	}
+	return zone, nil
+}
+
+func (service *MerchantService) checkMerchantNearestRecord(zone *entity.MerchantNearestZoneRecord) bool {
+	for _, record := range zone.Records {
+		for _, merchant := range record.MerchantOrder {
+			if merchant.MerchantId == "" {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (service *MerchantService) GetAllMerchantRoutes() ([]*entity.MerchantTSPZoneRecord, error) {
 	zoneRecords := service.MerchantZoneRecord
 
 	for _, zone := range zoneRecords {
-		for _, preRegeneratedId := range zone.MerchantPregeneratedId {
-			_, isExists := service.AssignedMerchants[entity.PregeneratedId(fmt.Sprint(preRegeneratedId))]
-			if !isExists {
-				return nil, errors.New("some merchant is still not assigned")
-			}
+		if !service.checkTspZoneRecord(zone) {
+			return nil, errors.New("some merchant is still not assigned")
 		}
 	}
 
 	return service.MerchantZoneRecord, nil
+}
+
+func (service *MerchantService) GetTwoZoneMerchantRoutes() ([]*entity.MerchantTSPZoneRecord, error) {
+	zoneRecords := service.MerchantZoneRecord
+
+	randZone1Index := rand.IntN(len(zoneRecords))
+	randZone2Index := rand.IntN(len(zoneRecords))
+	if randZone1Index == randZone2Index {
+		randZone2Index = (randZone2Index + 1) % len(zoneRecords)
+	}
+
+	if !service.checkTspZoneRecord(zoneRecords[randZone1Index]) {
+		return nil, errors.New("some merchant is still not assigned")
+	}
+	if !service.checkTspZoneRecord(zoneRecords[randZone2Index]) {
+		return nil, errors.New("some merchant is still not assigned")
+	}
+	zone1 := zoneRecords[randZone1Index]
+	zone2 := zoneRecords[randZone2Index]
+	return []*entity.MerchantTSPZoneRecord{zone1, zone2}, nil
+}
+
+func (service *MerchantService) GetMerchantRoutes() (*entity.MerchantTSPZoneRecord, error) {
+	zoneRecords := service.MerchantZoneRecord
+	zone := zoneRecords[rand.IntN(len(zoneRecords))]
+	if !service.checkTspZoneRecord(zone) {
+		return nil, errors.New("some merchant is still not assigned")
+	}
+	return zone, nil
+}
+
+func (service *MerchantService) checkTspZoneRecord(zone *entity.MerchantTSPZoneRecord) bool {
+	for _, tspRoute := range zone.GeneratedTSPRoutes {
+		for _, merchant := range tspRoute.GeneratedRoutes {
+			if merchant.MerchantId == "" {
+				return false
+			}
+		}
+	}
+	return true
+
 }
 
 // Get all pregenerated merchants
@@ -91,6 +184,11 @@ func (service *MerchantService) InitMerchantNearestLocations(generateCount int) 
 				StartingPoint: userLocation,
 				MerchantOrder: nearestMerchant,
 			})
+
+			// Log progress for every 100 generated nearest locations
+			if (i+1)%100 == 0 {
+				log.Printf("Generated %d nearest locations in zone %d\n", i+1, a)
+			}
 		}
 		service.MerchantNearestZoneRecord = append(service.MerchantNearestZoneRecord, &entity.MerchantNearestZoneRecord{
 			Records: records,
@@ -132,15 +230,18 @@ func (service *MerchantService) InitPegeneratedTSPMerchants(generateCount int) {
 			// generate TSP route for the selected merchants
 			startingIndex := rand.IntN(len(selectedMerchant))
 			routes, totalDistance := entity.GenerateTSPMerchantRouteFromStartingPoint(userLocation, startingIndex, selectedMerchant)
-			service.MerchantZoneRecord[a].GeneratedRoutes = append(service.MerchantZoneRecord[a].GeneratedRoutes, &entity.MerchantTSPRoute{
+			service.MerchantZoneRecord[a].GeneratedTSPRoutes = append(service.MerchantZoneRecord[a].GeneratedTSPRoutes, &entity.MerchantTSPRoute{
 				GeneratedRoutes:       routes,
 				StartingPoint:         userLocation,
 				TotalDistance:         totalDistance,
 				TotalDurationInMinute: entity.CalculateTimeInMinute(totalDistance, 40),
 				StartingIndex:         startingIndex,
 			})
-			log.Println("Distance from starting index to nearest merchant: ", entity.CalculateDistance(userLocation, routes[entity.Order(startingIndex)].Location))
-			log.Println("Distance from starting slice to nearest merchant: ", entity.CalculateDistance(userLocation, routes[0].Location))
+
+			// Log progress for every 100 generated TSP
+			if (i+1)%100 == 0 {
+				log.Printf("Generated %d TSP routes in zone %d\n", i+1, a)
+			}
 		}
 	}
 	log.Println("Init pregenerated TSP merchants")
@@ -150,10 +251,18 @@ func (service *MerchantService) InitPegeneratedTSPMerchants(generateCount int) {
 func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity.MerchantZoneOpts) {
 	service.PregeneratedMerchants = make(map[entity.PregeneratedId]*entity.Merchant)
 	service.AssignedMerchants = make(map[entity.PregeneratedId]*entity.Merchant)
+	merchantShards := make([]*shard, params.NumberOfZones)
+	for i := 0; i < params.NumberOfZones; i++ {
+		merchantShards[i] = &shard{}
+	}
 	// init starting point
 	var startingPoint entity.LocationPoint
 	// create zones contains collection of merchants
 	for i := 0; i < params.NumberOfZones; i++ {
+		shard := &shard{
+			mutex: &sync.Mutex{},
+			count: 0,
+		}
 		// generate flat square location bounds
 		endPoint := entity.CalculateAreaSquare(startingPoint, params.Area)
 
@@ -168,9 +277,15 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 			)
 			merchants[merchant.PregeneratedId] = merchant
 			service.PregeneratedMerchants[entity.PregeneratedId(merchant.PregeneratedId)] = merchant
+			service.SequenceMutex.Lock()
+			service.Merchants = append(service.Merchants, merchant)
+			shard.merchants = append(shard.merchants, merchant)
+			atomic.AddInt64(service.merchantSize, 1)
+			service.SequenceMutex.Unlock()
 
 			pregeneratedMerchantIds = append(pregeneratedMerchantIds, merchant.PregeneratedId)
 		}
+		merchantShards[i%params.NumberOfZones] = shard
 
 		// append the zone with the merchants into the service
 		merchantPregeneratedIds := make([]entity.PregeneratedId, len(pregeneratedMerchantIds))
@@ -178,7 +293,7 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 			merchantPregeneratedIds[i] = entity.PregeneratedId(id)
 		}
 
-		service.MerchantZoneRecord = append(service.MerchantZoneRecord, &entity.MerchantZoneRecord{
+		service.MerchantZoneRecord = append(service.MerchantZoneRecord, &entity.MerchantTSPZoneRecord{
 			StartZoneRange:         entity.LocationPoint{Lat: startingPoint.Lat, Long: startingPoint.Long},
 			EndZoneRange:           entity.LocationPoint{Lat: endPoint.Lat, Long: endPoint.Long},
 			MerchantPregeneratedId: merchantPregeneratedIds,
@@ -187,6 +302,7 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 		// update the starting point for the next loop
 		startingPoint = entity.LocationPoint{Lat: endPoint.Lat, Long: endPoint.Long + entity.KmToDegrees(params.Gap)}
 	}
+	service.merchantShards = merchantShards
 	log.Println("Init zones with pregenerated merchants")
 }
 
@@ -194,7 +310,7 @@ func (service *MerchantService) InitZonesWithPregeneratedMerchants(params entity
 func (service *MerchantService) AssignPregeneratedMerchant(pregeneratedId, merchantId string) error {
 	merchant, isExists := service.PregeneratedMerchants[entity.PregeneratedId(pregeneratedId)]
 	if !isExists {
-		return errors.New("merchant not found")
+		return fmt.Errorf("pregenerated merchant with id %s does not exist", pregeneratedId)
 	}
 	merchant.MerchantId = merchantId
 	service.AssignedMerchants[entity.PregeneratedId(pregeneratedId)] = merchant

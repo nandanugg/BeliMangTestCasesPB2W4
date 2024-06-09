@@ -132,7 +132,7 @@ export function EstimateOrderTest(user, admin, zone1, zone2, config, tags) {
             negativePayloadWithAllFalseMerchantId.orders.push({
                 merchantId: "invalid",
                 isStartingPoint: i == 0,
-                items: merchantItemMap[currentMerchant.merchantId].map(e => ({ itemId: e.itemId, quantity: 1 }))
+                items: []
             })
             negativePayloadWithFarUserLocation.orders.push({
                 merchantId: currentMerchant.merchantId,
