@@ -8,7 +8,7 @@ import { testGetAssert } from "../../helpers/request.js";
  * @param {import("../../entity/config").Config} config 
  */
 export function GetOrderTest(user, config, tags) {
-    if (!IsAdmin(user)) {
+    if (!IsUser(user)) {
         return;
     }
 
