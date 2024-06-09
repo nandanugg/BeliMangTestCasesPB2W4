@@ -52,9 +52,8 @@ export function GetOrderTest(user, config, tags) {
     testGetAssert("with name=a param", featureName, route, { name: "a" }, headers, combine(positiveTestCases, {
         ['should have name with "a" in it']: (v) => {
             const hasMerchantName = isArrayExists(v, 'orders[].merchant.name')
-            const hasItemName = isArrayExists(v, 'orders[].items[].name')
-            if (hasMerchantName && hasItemName) {
-                v.json().data.forEach(e => {
+            if (hasMerchantName) {
+                v.json().forEach(e => {
                     if (!e.merchant.name.toLowerCase().includes('a')) {
                         if (!e.items.every(a => a.name.toLowerCase().includes('a'))) {
                             return false
