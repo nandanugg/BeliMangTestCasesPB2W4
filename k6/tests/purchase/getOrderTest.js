@@ -8,6 +8,7 @@ import { testGetAssert } from "../../helpers/request.js";
  * @param {import("../../entity/user.js").User} user
  * @param {import("../../entity/config").Config} config 
  */
+
 export function GetOrderTest(user, config, tags) {
     if (!IsUser(user)) {
         return;
@@ -32,26 +33,26 @@ export function GetOrderTest(user, config, tags) {
     const positiveTestCases = {
         ['should return 200']: (v) => v.status === 200,
         ['should have the correct total data based on pagination']: (v) => isTotalDataInRange(v, '', 1, 5),
-        ['should have merchant.merchantId']: (v) => isExists(v, 'orders[].merchant.merchantId'),
-        ['should have merchant.name']: (v) => isExists(v, 'orders[].merchant.name'),
-        ['should have merchant.imageUrl']: (v) => isExists(v, 'orders[].merchant.imageUrl'),
-        ['should have merchant.merchantCategory']: (v) => isExists(v, 'orders[].merchant.merchantCategory'),
-        ['should have merchant.createdAt']: (v) => isEqualWith(v, 'orders[].merchant.createdAt', (a) => a.every(b => isValidDate(b))),
-        ['should have merchant.location.lat']: (v) => isExists(v, 'orders[].merchant.location.lat'),
-        ['should have merchant.location.long']: (v) => isExists(v, 'orders[].merchant.location.long'),
-        ['should have items.itemId']: (v) => isExists(v, 'orders[].items[].itemId'),
-        ['should have items.name']: (v) => isExists(v, 'orders[].items[].name'),
-        ['should have items.imageUrl']: (v) => isExists(v, 'orders[].items[].imageUrl'),
-        ['should have items.productCategory']: (v) => isExists(v, 'orders[].items[].productCategory'),
-        ['should have items.createdAt']: (v) => isEqualWith(v, 'orders[].items[].createdAt', (a) => a.every(b => isValidDate(b))),
+        ['should have merchant.merchantId']: (v) => isArrayExists(v, 'orders[].merchant.merchantId'),
+        ['should have merchant.name']: (v) => isArrayExists(v, 'orders[].merchant.name'),
+        ['should have merchant.imageUrl']: (v) => isArrayExists(v, 'orders[].merchant.imageUrl'),
+        ['should have merchant.merchantCategory']: (v) => isArrayExists(v, 'orders[].merchant.merchantCategory'),
+        ['should have merchant.createdAt']: (v) => isArrayEqualWith(v, 'orders[].merchant.createdAt', (a) => a.every(b => isValidDate(b))),
+        ['should have merchant.location.lat']: (v) => isArrayExists(v, 'orders[].merchant.location.lat'),
+        ['should have merchant.location.long']: (v) => isArrayExists(v, 'orders[].merchant.location.long'),
+        ['should have items.itemId']: (v) => isArrayExists(v, 'orders[].items[].itemId'),
+        ['should have items.name']: (v) => isArrayExists(v, 'orders[].items[].name'),
+        ['should have items.imageUrl']: (v) => isArrayExists(v, 'orders[].items[].imageUrl'),
+        ['should have items.productCategory']: (v) => isArrayExists(v, 'orders[].items[].productCategory'),
+        ['should have items.createdAt']: (v) => isArrayEqualWith(v, 'orders[].items[].createdAt', (a) => a.every(b => isValidDate(b))),
     }
 
     testGetAssert("no param", featureName, route, {}, headers, positiveTestCases, config, tags)
 
     testGetAssert("with name=a param", featureName, route, { name: "a" }, headers, combine(positiveTestCases, {
         ['should have name with "a" in it']: (v) => {
-            const hasMerchantName = isExists(v, 'orders[].merchant.name')
-            const hasItemName = isExists(v, 'orders[].items[].name')
+            const hasMerchantName = isArrayExists(v, 'orders[].merchant.name')
+            const hasItemName = isArrayExists(v, 'orders[].items[].name')
             if (hasMerchantName && hasItemName) {
                 v.json().data.forEach(e => {
                     if (!e.merchant.name.toLowerCase().includes('a')) {
@@ -72,11 +73,11 @@ export function GetOrderTest(user, config, tags) {
     }), config, tags)
 
     const paginationRes = testGetAssert("pagination", featureName, route, { limit: 2, offset: 0 }, headers, combine(positiveTestCases, {
-        ['should have the correct total data based on pagination']: (v) => isTotalDataInRange(v, 'data[]', 1, 2),
+        ['should have the correct total data based on pagination']: (v) => isTotalDataInRange(v, '', 1, 2),
     }), config, tags)
     if (!config.LOAD_TEST && paginationRes.isSuccess) {
         testGetAssert("pagination offset", featureName, route, { limit: 2, offset: 2 }, headers, combine(positiveTestCases, {
-            ['should have the correct total data based on pagination']: (v) => isTotalDataInRange(v, 'data[]', 1, 2),
+            ['should have the correct total data based on pagination']: (v) => isTotalDataInRange(v, '', 1, 2),
             ['should have different data from offset 0']: (res) => {
                 try {
                     return res.json().data.every(e => {
@@ -87,5 +88,31 @@ export function GetOrderTest(user, config, tags) {
                 }
             },
         }), config, tags)
+    }
+}
+
+function isArrayEqualWith(v, query, expected) {
+    try {
+        const a = v.json();
+        return isEqualWith({
+            json() {
+                return { a: a }
+            }
+        }, `a[].${query}`, expected);
+    } catch (error) {
+        return false
+    }
+}
+
+function isArrayExists(v, query) {
+    try {
+        const a = v.json();
+        return isExists({
+            json() {
+                return { a: a }
+            }
+        }, `a[].${query}`);
+    } catch (error) {
+        return false
     }
 }
