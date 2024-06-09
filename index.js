@@ -42,13 +42,13 @@ export function setup() {
             area: 1,
             gap: 10,
             numberOfMerchantsPerZone: 10,
-            numberOfZones: 2
+            numberOfZones: 30
         });
         initMerchantNearestLocations(client, {
-            generateCount: 2
+            generateCount: 300
         });
         initPegeneratedTSPMerchants(client, {
-            generateCount: 2
+            generateCount: 300
         });
         console.log(`🚀 NUKE READY!`)
         console.log(`💥 FAYYYAAAAH! 🇯🇵`)
