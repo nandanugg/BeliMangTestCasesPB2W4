@@ -53,12 +53,14 @@ export function GetOrderTest(user, config, tags) {
         ['should have name with "a" in it']: (v) => {
             const hasMerchantName = isArrayExists(v, 'orders[].merchant.name')
             if (hasMerchantName) {
-                v.json().forEach(e => {
-                    if (!e.merchant.name.toLowerCase().includes('a')) {
-                        if (!e.items.every(a => a.name.toLowerCase().includes('a'))) {
-                            return false
+                v.json().forEach(orderDetail => {
+                    orderDetail.orders.forEach(order => {
+                        if (!order.merchant.name.toLowerCase().includes('a')) {
+                            if (!order.items.every(a => a.name.toLowerCase().includes('a'))) {
+                                return false
+                            }
                         }
-                    }
+                    })
                 })
             } else {
                 return false
