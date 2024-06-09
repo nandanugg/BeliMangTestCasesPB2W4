@@ -41,7 +41,7 @@ export function setup() {
         initZonesWithPregeneratedMerchants(client, {
             area: 1,
             gap: 10,
-            numberOfMerchantsPerZone: 10,
+            numberOfMerchantsPerZone: 50,
             numberOfZones: 30
         });
         initMerchantNearestLocations(client, {
