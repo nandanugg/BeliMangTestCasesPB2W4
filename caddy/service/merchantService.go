@@ -322,5 +322,10 @@ func (service *MerchantService) ResetAll() {
 	service.MerchantNearestZoneRecord = nil
 	service.PregeneratedMerchants = nil
 	service.AssignedMerchants = nil
+	service.merchantShards = nil
+	service.merchantSize = nil
+	service.totalCount = nil
+	service.Merchants = nil
+	service.SequenceMutex = nil
 	log.Println("Reset all")
 }
